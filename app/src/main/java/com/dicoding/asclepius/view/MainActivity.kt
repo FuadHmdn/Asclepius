@@ -19,7 +19,6 @@ import java.text.NumberFormat
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var imageClassifierHelper: ImageClassifierHelper
-
     private var currentImageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.galleryButton.setOnClickListener { startGallery() }
         binding.analyzeButton.setOnClickListener { analyzeImage() }
+        binding.historyButton.setOnClickListener { moveToHistory() }
     }
 
     private fun startGallery() {
@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showImage() {
+        binding.previewImageView.setImageURI(null)
         binding.previewImageView.setImageURI(currentImageUri)
     }
 
@@ -80,6 +81,11 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun moveToHistory() {
+        val intent = Intent(this, HistoryActivity::class.java)
+        startActivity(intent)
+    }
+
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
@@ -116,7 +122,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Crop error: ${cropError?.message}", Toast.LENGTH_SHORT).show()
         }
     }
-    
+
     companion object{
         const val noPhoto = "No photo selected"
     }

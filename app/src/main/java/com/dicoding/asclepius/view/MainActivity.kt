@@ -102,7 +102,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startCrop(sourceUri: Uri) {
-        val destinationUri = Uri.fromFile(File(cacheDir, "croppedImage.jpg"))
+        val timestamp = System.currentTimeMillis()
+        val destinationUri = Uri.fromFile(File(cacheDir, "croppedImage_$timestamp.jpg"))
 
         UCrop.of(sourceUri, destinationUri)
             .withMaxResultSize(1080, 1080)

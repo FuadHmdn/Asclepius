@@ -1,5 +1,6 @@
 package com.dicoding.asclepius.view
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,4 +27,10 @@ class AsclepiusViewModel(private val historyRepository: HistoryRepository): View
     }
 
     fun isSucces(): LiveData<Boolean> = historyRepository.isSuccess
+
+    fun setCurrentImageUri(uri: Uri){
+        historyRepository.currentImageUri = uri
+    }
+
+    fun getUri() = historyRepository.currentImageUri
 }

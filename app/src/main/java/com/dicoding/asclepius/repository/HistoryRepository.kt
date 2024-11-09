@@ -1,5 +1,6 @@
 package com.dicoding.asclepius.repository
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.dicoding.asclepius.data.local.room.HistoryDao
@@ -20,6 +21,8 @@ class HistoryRepository(
 
     private var _isSuccess = MutableLiveData<Boolean>()
     val isSuccess get() = _isSuccess
+
+    var currentImageUri: Uri? = null
 
     init {
         getNews()

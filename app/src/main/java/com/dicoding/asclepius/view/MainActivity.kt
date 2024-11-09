@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.dicoding.asclepius.R
 import com.dicoding.asclepius.databinding.ActivityMainBinding
@@ -21,7 +22,16 @@ import java.text.NumberFormat
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var imageClassifierHelper: ImageClassifierHelper
-    private var currentImageUri: Uri? = null
+
+    private val factory: ViewModelFactory by lazy {
+        ViewModelFactory.getInstance(this)
+    }
+
+    private val viewModel: AsclepiusViewModel by viewModels {
+        factory
+    }
+
+    private var currentUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +42,11 @@ class MainActivity : AppCompatActivity() {
         binding.analyzeButton.setOnClickListener { analyzeImage() }
         binding.historyButton.setOnClickListener { moveToHistory() }
         binding.newsButton.setOnClickListener { moveToNews() }
+        currentUri = viewModel.getUri()
+
+        currentUri?.let {
+            binding.previewImageView.setImageURI(it)
+        }
     }
 
     private fun startGallery() {
@@ -40,11 +55,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun showImage() {
         binding.previewImageView.setImageURI(null)
-        binding.previewImageView.setImageURI(currentImageUri)
+        binding.previewImageView.setImageURI(viewModel.getUri())
     }
 
     private fun analyzeImage() {
-        if (currentImageUri != null) {
+        if (currentUri != null) {
             imageClassifierHelper = ImageClassifierHelper(
                 context = this,
                 classifierListener = object : ImageClassifierHelper.ClassifierListener {
@@ -63,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                                         "${it.label} " + NumberFormat.getPercentInstance()
                                             .format(it.score).trim()
                                     }
-                                currentImageUri?.let { uri -> moveToResult(displayResult, uri) }
+                                currentUri?.let { uri -> moveToResult(displayResult, uri) }
                             } else {
                                 Toast.makeText(this@MainActivity,
                                     getString(R.string.gagal), Toast.LENGTH_LONG).show()
@@ -74,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 }
             )
 
-            currentImageUri?.let { uri ->
+            currentUri?.let { uri ->
                 imageClassifierHelper.classifyStaticImage(uri)
             }
         } else {
@@ -108,10 +123,9 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.PickVisualMedia()
     ){ uri: Uri? ->
         if ( uri != null) {
-            currentImageUri = uri
             startCrop(uri)
         } else {
-            showToast(noPhoto)
+            showToast(NO_PHOTO)
         }
     }
 
@@ -129,7 +143,8 @@ class MainActivity : AppCompatActivity() {
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             val resultUri = UCrop.getOutput(data!!)
             resultUri?.let {
-                currentImageUri = it
+                viewModel.setCurrentImageUri(it)
+                currentUri = it
                 showImage()
             }
         } else if (resultCode == UCrop.RESULT_ERROR) {
@@ -139,6 +154,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object{
-        const val noPhoto = "No photo selected"
+        const val NO_PHOTO = "No photo selected"
     }
 }

@@ -7,4 +7,7 @@
     <string name="result">Hasil Analisis</string>
     <string name="save">Save</string>
     <string name="history">History</string>
+    <string name="news">News</string>
+    <string name="silahkan_pilih_gambar_terebih_dahulu">Silahkan pilih gambar terebih dahulu!</string>
+    <string name="gagal">Gagal</string>
 </resources>

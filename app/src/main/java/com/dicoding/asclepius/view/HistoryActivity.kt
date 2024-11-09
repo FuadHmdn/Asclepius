@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.asclepius.databinding.ActivityHistoryBinding
 
 class HistoryActivity : AppCompatActivity() {
@@ -20,7 +21,7 @@ class HistoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.rvHistory.layoutManager = GridLayoutManager(this, 4, GridLayoutManager.VERTICAL, false)
+        binding.rvHistory.layoutManager = LinearLayoutManager(this)
 
         val adapter = HistoryAdapter()
         binding.rvHistory.adapter = adapter

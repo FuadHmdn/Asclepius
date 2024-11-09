@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.dicoding.asclepius.R
 import com.dicoding.asclepius.databinding.ActivityMainBinding
 import com.dicoding.asclepius.helper.ImageClassifierHelper
 import com.dicoding.asclepius.view.ResultActivity.Companion.RESULT
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         binding.galleryButton.setOnClickListener { startGallery() }
         binding.analyzeButton.setOnClickListener { analyzeImage() }
         binding.historyButton.setOnClickListener { moveToHistory() }
+        binding.newsButton.setOnClickListener { moveToNews() }
     }
 
     private fun startGallery() {
@@ -41,37 +43,43 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun analyzeImage() {
-        imageClassifierHelper = ImageClassifierHelper(
-            context = this,
-            classifierListener = object : ImageClassifierHelper.ClassifierListener {
-                override fun onError(error: String) {
-                    TODO("Not yet implemented")
-                }
+        if (currentImageUri != null) {
+            imageClassifierHelper = ImageClassifierHelper(
+                context = this,
+                classifierListener = object : ImageClassifierHelper.ClassifierListener {
+                    override fun onError(error: String) {
+                        TODO("Not yet implemented")
+                    }
 
-                override fun onResults(result: List<Classifications>?) {
-                    result?.let {
-                        if (it.isNotEmpty() && it[0].categories.isNotEmpty()) {
-                            val sortedCategories =
-                                it[0].categories.sortedByDescending { it.score }
-                            val displayResult =
-                                sortedCategories.joinToString("\n") {
-                                    "${it.label} " + NumberFormat.getPercentInstance()
-                                        .format(it.score).trim()
-                                }
-                            Toast.makeText(this@MainActivity, displayResult, Toast.LENGTH_LONG).show()
-                            currentImageUri?.let { uri -> moveToResult(displayResult, uri) }
-                        } else {
-                            Toast.makeText(this@MainActivity, "gagal", Toast.LENGTH_LONG).show()
+                    override fun onResults(result: List<Classifications>?) {
+                        result?.let {
+                            if (it.isNotEmpty() && it[0].categories.isNotEmpty()) {
+                                val sortedCategories =
+                                    it[0].categories.sortedByDescending { it.score }
+                                val displayResult =
+                                    sortedCategories.joinToString("\n") {
+                                        "${it.label} " + NumberFormat.getPercentInstance()
+                                            .format(it.score).trim()
+                                    }
+                                currentImageUri?.let { uri -> moveToResult(displayResult, uri) }
+                            } else {
+                                Toast.makeText(this@MainActivity,
+                                    getString(R.string.gagal), Toast.LENGTH_LONG).show()
+                            }
                         }
                     }
+
                 }
+            )
 
+            currentImageUri?.let { uri ->
+                imageClassifierHelper.classifyStaticImage(uri)
             }
-        )
-
-        currentImageUri?.let { uri ->
-            imageClassifierHelper.classifyStaticImage(uri)
+        } else {
+            Toast.makeText(this@MainActivity,
+                getString(R.string.silahkan_pilih_gambar_terebih_dahulu), Toast.LENGTH_LONG).show()
         }
+
     }
 
     private fun moveToResult(result: String, currentUri: Uri) {
@@ -83,6 +91,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun moveToHistory() {
         val intent = Intent(this, HistoryActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun moveToNews() {
+        val intent = Intent(this, NewsActivity::class.java)
         startActivity(intent)
     }
 

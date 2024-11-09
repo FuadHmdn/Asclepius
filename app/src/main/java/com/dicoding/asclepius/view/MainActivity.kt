@@ -3,6 +3,7 @@ package com.dicoding.asclepius.view
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,7 +49,8 @@ class MainActivity : AppCompatActivity() {
                 context = this,
                 classifierListener = object : ImageClassifierHelper.ClassifierListener {
                     override fun onError(error: String) {
-                        TODO("Not yet implemented")
+                        Toast.makeText(this@MainActivity, error, Toast.LENGTH_LONG).show()
+                        Log.e("ImageClassifierError", error)
                     }
 
                     override fun onResults(result: List<Classifications>?) {
@@ -79,7 +81,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity,
                 getString(R.string.silahkan_pilih_gambar_terebih_dahulu), Toast.LENGTH_LONG).show()
         }
-
     }
 
     private fun moveToResult(result: String, currentUri: Uri) {

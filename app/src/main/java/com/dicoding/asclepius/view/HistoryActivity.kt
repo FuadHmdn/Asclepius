@@ -3,12 +3,11 @@ package com.dicoding.asclepius.view
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.asclepius.databinding.ActivityHistoryBinding
 
 class HistoryActivity : AppCompatActivity() {
-    lateinit var binding: ActivityHistoryBinding
+    private lateinit var binding: ActivityHistoryBinding
     private val factory: ViewModelFactory by lazy {
         ViewModelFactory.getInstance(this)
     }

@@ -20,5 +20,10 @@ class AsclepiusViewModel(private val historyRepository: HistoryRepository): View
         return historyRepository.historyDao.getAll()
     }
 
-    fun getAllNews(): LiveData<List<Articles>> = historyRepository.news
+    fun getAllNews(): LiveData<List<Articles>>{
+        historyRepository.getNews()
+        return historyRepository.news
+    }
+
+    fun isSucces(): LiveData<Boolean> = historyRepository.isSuccess
 }

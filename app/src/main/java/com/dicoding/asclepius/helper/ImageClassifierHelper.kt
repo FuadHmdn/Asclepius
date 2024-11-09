@@ -14,9 +14,9 @@ import org.tensorflow.lite.task.vision.classifier.ImageClassifier
 
 
 class ImageClassifierHelper(
-    val threshold: Float =  0.1f,
-    val maxResults: Int =  1,
-    val modelName: String = "cancer_classification.tflite",
+    private val threshold: Float =  0.1f,
+    private val maxResults: Int =  1,
+    private val modelName: String = "cancer_classification.tflite",
     val context: Context,
     val classifierListener: ClassifierListener?
 ) {
@@ -55,28 +55,31 @@ class ImageClassifierHelper(
     }
 
     fun classifyStaticImage(imageUri: Uri) {
-        var tensorImage: TensorImage? = null
+        try {
+            var tensorImage: TensorImage? = null
 
-        if (imageClassifier == null){
-            setupImageClassifier()
+            if (imageClassifier == null){
+                setupImageClassifier()
+            }
+
+            val imageProcessor = ImageProcessor.Builder()
+                .build()
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val source = ImageDecoder.createSource(context.contentResolver, imageUri)
+                ImageDecoder.decodeBitmap(source)
+            } else {
+                MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
+            }.copy(Bitmap.Config.ARGB_8888, true)?.let { bitmap ->
+                tensorImage = imageProcessor.process(TensorImage.fromBitmap(bitmap))
+            }
+
+            val results = imageClassifier?.classify(tensorImage)
+            classifierListener?.onResults(
+                results
+            )
+        } catch (e: Exception) {
+            classifierListener?.onError("Error while processing the image: ${e.message}")
         }
-
-        val imageProcessor = ImageProcessor.Builder()
-            .build()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val source = ImageDecoder.createSource(context.contentResolver, imageUri)
-            ImageDecoder.decodeBitmap(source)
-        } else {
-            MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
-        }.copy(Bitmap.Config.ARGB_8888, true)?.let { bitmap ->
-            tensorImage = imageProcessor.process(TensorImage.fromBitmap(bitmap))
-        }
-
-        val results = imageClassifier?.classify(tensorImage)
-        classifierListener?.onResults(
-            results
-        )
     }
-
 }

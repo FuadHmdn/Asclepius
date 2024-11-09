@@ -1,16 +1,11 @@
 package com.dicoding.asclepius.view
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.dicoding.asclepius.R
+import com.dicoding.asclepius.data.remote.Articles
 import com.dicoding.asclepius.databinding.ActivityNewsBinding
 
 class NewsActivity : AppCompatActivity() {
@@ -31,17 +26,27 @@ class NewsActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.rvNews.layoutManager = LinearLayoutManager(this)
 
-        val adapter = NewsAdapter()
-        binding.rvNews.adapter = adapter
+
+        asclepiusViewModel.isSucces().observe(this){
+            showLoading(it)
+        }
 
         asclepiusViewModel.getAllNews().observe(this) { news ->
-            if (news != null) {
-                adapter.submitList(news)
-                Log.d("REPONSE", news.toString())
-            } else {
-                Toast.makeText(this, "DATA KOSONG", Toast.LENGTH_LONG).show()
-            }
+            setAdapter(news)
         }
     }
 
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.progressBar.visibility = View.VISIBLE
+        } else {
+            binding.progressBar.visibility = View.GONE
+        }
+    }
+
+    private fun setAdapter(news: List<Articles>){
+        val adapter = NewsAdapter()
+        binding.rvNews.adapter = adapter
+        adapter.submitList(news)
+    }
 }

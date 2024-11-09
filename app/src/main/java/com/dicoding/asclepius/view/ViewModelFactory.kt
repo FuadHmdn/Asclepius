@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.dicoding.asclepius.di.Injection
 import com.dicoding.asclepius.repository.HistoryRepository
-import com.dicoding.asclepius.view.AsclepiusViewModel
 
 class ViewModelFactory private constructor(private val historyRepository: HistoryRepository)
     : ViewModelProvider.NewInstanceFactory() {
